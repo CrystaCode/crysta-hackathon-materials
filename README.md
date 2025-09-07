@@ -1,6 +1,4 @@
-<p align="center">
-  <img width="70%" alt="Logo - Mini Version" src="https://github.com/user-attachments/assets/f815d1d7-0d91-4423-b843-c44e1d2b35c1" />
-</p>
+<img width="120px" alt="Logo - Mini Version" src="https://github.com/user-attachments/assets/f815d1d7-0d91-4423-b843-c44e1d2b35c1" />
 
 # CrystaCode Hackathon Materials
 
