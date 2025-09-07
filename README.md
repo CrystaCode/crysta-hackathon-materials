@@ -1,7 +1,15 @@
+<p align="center">
+  <img width="70%" alt="Logo - Mini Version" src="https://github.com/user-attachments/assets/f815d1d7-0d91-4423-b843-c44e1d2b35c1" />
+</p>
+
 # CrystaCode Hackathon Materials
 
 Welcome to CrystaCode! We're thrilled to see your enthusiasm for working with AI technologies.  
 At CrystaCode, we’re passionate about helping you dive deeper into the world of AI—and we’re backing that up by sponsoring this hackathon with access to powerful AI infrastructure for all you talented participants.
+
+
+
+
 
 ## 🚀 Ready-to-Go AI Models
 
