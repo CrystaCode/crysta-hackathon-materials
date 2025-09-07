@@ -3,11 +3,9 @@
 Welcome to CrystaCode! We're thrilled to see your enthusiasm for working with AI technologies.  
 At CrystaCode, we’re passionate about helping you dive deeper into the world of AI—and we’re backing that up by sponsoring this hackathon with access to powerful AI infrastructure for all you talented participants.
 
----
-
 ## 🚀 Ready-to-Go AI Models
 
-Each team will receive access to a pre-configured `GPT-4o-mini` model hosted on **Azure OpenAI**.
+Each team will receive access to a pre-configured `GPT-4o-mini` model hosted on [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-foundry/models/openai).
 
 To use the model, you’ll need the following parameters:
 - `Endpoint`
@@ -21,9 +19,6 @@ Instead of handing them over directly, you’ll retrieve these credentials by ta
 
 Yes, **you’ll be using AI to unlock your AI tools!** It’s like inception, but for developers.
 
-> Start your conversation with Crysta here:  [CrystaCode.ai](https://crystacode.ai)
----
-
-## 
+> Start your conversation with Crysta here: **[CrystaCode.ai](https://crystacode.ai)**
 
 Let the hacking begin! 
