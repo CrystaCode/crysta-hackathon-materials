@@ -18,7 +18,7 @@ To use the model, you’ll need the following parameters:
 - `AzureKey`
 - `DeploymentName`
 
-You’ll have **1 million tokens** to build your MVP—completely free.
+You’ll have **1 million tokens** to build your MVP completely free.
 
 But here’s the twist: we’ve added a fun challenge to get them!  
 Instead of handing them over directly, you’ll retrieve these credentials by talking with an AI!
