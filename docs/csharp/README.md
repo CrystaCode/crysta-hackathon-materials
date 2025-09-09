@@ -6,28 +6,22 @@ For OpenAI API Endpoints, deploy the Model to generate the endpoint URL and an A
 
 The API endpoint URL and API key can be found on the Deployments + Endpoint page once the model is deployed.
 
-To create a client with the Microsoft.Extensions.AI abstractions using an API key, you have a few options. The most future-proof approach uses the Microsoft.Extensions.AI abstractions:
+To create a client using the Azure OpenAI SDK with async patterns, initialize the client by passing your API key to the SDK's configuration. This approach uses modern async patterns and is ready for Microsoft.Extensions.AI integration:
 
 ```csharp
-using Microsoft.Extensions.AI;
 using Azure;
 using Azure.AI.OpenAI;
+using OpenAI.Chat;
 
 var endpoint = new Uri("https://crysta-openai-hackathon.cognitiveservices.azure.com/");
 var model = "gpt-4o-mini";
 var deploymentName = "gpt-4o-mini-hackaton-test";
 var apiKey = "<your-api-key>";
 
-// Create Azure OpenAI client
 AzureOpenAIClient azureClient = new(
     endpoint,
     new AzureKeyCredential(apiKey));
-
-// Option 1: Direct IChatClient approach (when available)
-// IChatClient chatClient = azureClient.GetChatClient(deploymentName).AsChatClient();
-
-// Option 2: Current working approach with Azure OpenAI SDK
-var chatClient = azureClient.GetChatClient(deploymentName);
+ChatClient chatClient = azureClient.GetChatClient(deploymentName);
 ```
 
 ## 2. Install dependencies
@@ -37,20 +31,20 @@ Open PowerShell at the desired project folder, restore the environment, and run 
 ```bash
 dotnet restore
 dotnet run
-dotnet add package Microsoft.Extensions.AI
 dotnet add package Azure.AI.OpenAI
 dotnet add package Azure.Core
+dotnet add package Microsoft.Extensions.AI
 ```
 
-> **Migration Note**: We now recommend using Microsoft.Extensions.AI abstractions for better testability, dependency injection support, and consistent APIs across different AI providers. The examples below show the updated approach using `IChatClient` interface and async patterns. Note that the Microsoft.Extensions.AI integration with Azure OpenAI is actively being developed, so exact APIs may evolve.
+> **Migration Note**: These examples use async patterns (CompleteChatAsync, CompleteChatStreamingAsync) which are the recommended approach for modern .NET applications. Microsoft.Extensions.AI provides additional abstractions for dependency injection and testing scenarios. As the Microsoft.Extensions.AI ecosystem evolves, these patterns will provide a smooth migration path.
 
 ## 3. Run a basic code sample
-This sample demonstrates a basic call to the chat completion API using modern .NET patterns. The approach shown here uses async/await patterns and is compatible with Microsoft.Extensions.AI abstractions.
+This sample demonstrates a basic call to the chat completion API using modern async patterns. This approach is compatible with Microsoft.Extensions.AI abstractions and uses the latest recommended patterns.
 
 ```csharp
-using Microsoft.Extensions.AI;
 using Azure;
 using Azure.AI.OpenAI;
+using OpenAI.Chat;
 
 var endpoint = new Uri("https://crysta-openai-hackathon.cognitiveservices.azure.com/");
 var deploymentName = "gpt-4o-mini-hackaton-test";
@@ -59,28 +53,34 @@ var apiKey = "<your-api-key>";
 AzureOpenAIClient azureClient = new(
     endpoint,
     new AzureKeyCredential(apiKey));
-var chatClient = azureClient.GetChatClient(deploymentName);
+ChatClient chatClient = azureClient.GetChatClient(deploymentName);
 
-// Use modern ChatMessage constructor pattern
+var chatOptions = new ChatCompletionOptions()
+{
+    MaxOutputTokenCount = 4096,
+    Temperature = 1.0f,
+    TopP = 1.0f,
+};
+
 List<ChatMessage> messages = new List<ChatMessage>()
 {
-    new(ChatRole.System, "You are a helpful assistant."),
-    new(ChatRole.User, "I am going to Paris, what should I see?"),
+    new SystemChatMessage("You are a helpful assistant."),
+    new UserChatMessage("I am going to Paris, what should I see?"),
 };
 
 // Use async pattern for better performance
-var response = await chatClient.CompleteAsync(messages);
-Console.WriteLine(response.Message.Text);
+var response = await chatClient.CompleteChatAsync(messages, chatOptions);
+Console.WriteLine(response.Value.Content[0].Text);
 ```
 
 ## 4. Explore more samples
 ### Run a multi-turn conversation
-This sample demonstrates a multi-turn conversation with the chat completion API using Microsoft.Extensions.AI. When using the model for a chat application, you'll need to manage the history of that conversation and send the latest messages to the model.
+This sample demonstrates a multi-turn conversation with the chat completion API using async patterns. When using the model for a chat application, you'll need to manage the history of that conversation and send the latest messages to the model.
 
 ```csharp
-using Microsoft.Extensions.AI;
 using Azure;
 using Azure.AI.OpenAI;
+using OpenAI.Chat;
 
 var endpoint = new Uri("https://crysta-openai-hackathon.cognitiveservices.azure.com/");
 var deploymentName = "gpt-4o-mini-hackaton-test";
@@ -89,32 +89,32 @@ var apiKey = "<your-api-key>";
 AzureOpenAIClient azureClient = new(
     endpoint,
     new AzureKeyCredential(apiKey));
-IChatClient chatClient = azureClient.GetChatClient(deploymentName).AsChatClient();
+ChatClient chatClient = azureClient.GetChatClient(deploymentName);
 
 List<ChatMessage> messages = new List<ChatMessage>()
 {
-    new(ChatRole.System, "You are a helpful assistant."),
-    new(ChatRole.User, "I am going to Paris, what should I see?"),
+    new SystemChatMessage("You are a helpful assistant."),
+    new UserChatMessage("I am going to Paris, what should I see?"),
 };
 
-var response = await chatClient.CompleteAsync(messages);
-Console.WriteLine(response.Message.Text);
+var response = await chatClient.CompleteChatAsync(messages);
+Console.WriteLine(response.Value.Content[0].Text);
 // Append the model response to the chat history.
-messages.Add(new(ChatRole.Assistant, response.Message.Text));
+messages.Add(new AssistantChatMessage(response.Value.Content[0].Text));
 // Append new user question.
-messages.Add(new(ChatRole.User, "What is so great about #1?"));
+messages.Add(new UserChatMessage("What is so great about #1?"));
 
-response = await chatClient.CompleteAsync(messages);
-Console.WriteLine(response.Message.Text);
+response = await chatClient.CompleteChatAsync(messages);
+Console.WriteLine(response.Value.Content[0].Text);
 ```
 
 ### Stream the output
 For a better user experience, you will want to stream the response of the model so that the first token shows up early and you avoid waiting for long responses.
 
 ```csharp
-using Microsoft.Extensions.AI;
 using Azure;
 using Azure.AI.OpenAI;
+using OpenAI.Chat;
 
 var endpoint = new Uri("https://crysta-openai-hackathon.cognitiveservices.azure.com/");
 var deploymentName = "gpt-4o-mini-hackaton-test";
@@ -123,17 +123,20 @@ var apiKey = "<your-api-key>";
 AzureOpenAIClient azureClient = new(
     endpoint,
     new AzureKeyCredential(apiKey));
-IChatClient chatClient = azureClient.GetChatClient(deploymentName).AsChatClient();
+ChatClient chatClient = azureClient.GetChatClient(deploymentName);
 
 List<ChatMessage> messages = new List<ChatMessage>()
 {
-    new(ChatRole.System, "You are a helpful assistant."),
-    new(ChatRole.User, "I am going to Paris, what should I see?"),
+    new SystemChatMessage("You are a helpful assistant."),
+    new UserChatMessage("I am going to Paris, what should I see?"),
 };
 
-await foreach (var update in chatClient.CompleteStreamingAsync(messages))
+await foreach (StreamingChatCompletionUpdate update in chatClient.CompleteChatStreamingAsync(messages))
 {
-    Console.Write(update.Text);
+    foreach (ChatMessageContentPart updatePart in update.ContentUpdate)
+    {
+        Console.Write(updatePart.Text);
+    }
 }
 Console.WriteLine("");
 ```
@@ -143,33 +146,28 @@ Console.WriteLine("");
 If you're migrating from older Azure OpenAI SDK approaches, here are the key changes:
 
 ### Key Changes Summary
-- **Package**: Added `Microsoft.Extensions.AI` and `Microsoft.Extensions.AI.AzureAIInference` 
-- **Interface**: Use `IChatClient` instead of `ChatClient` directly
-- **Methods**: Use `CompleteAsync()` instead of `CompleteChat()`
-- **Streaming**: Use `CompleteStreamingAsync()` instead of `CompleteChatStreaming()`
-- **Message Types**: Use `new ChatMessage(ChatRole.X, "text")` instead of specific message types like `SystemChatMessage`
-- **Options**: Use `ChatOptions` instead of `ChatCompletionOptions`
-- **Async Pattern**: All operations are now async by default
+- **Async Patterns**: Use `CompleteChatAsync()` instead of `CompleteChat()` for better performance
+- **Streaming**: Use `CompleteChatStreamingAsync()` with `await foreach` for streaming responses
+- **Future-ready**: Adding `Microsoft.Extensions.AI` package prepares your code for upcoming abstractions
+- **Modern C#**: Examples use modern async/await patterns throughout
 
 ### Migration Example
-**Before (Old SDK):**
+**Before (Synchronous):**
 ```csharp
 using OpenAI.Chat;
-ChatClient chatClient = azureClient.GetChatClient(deploymentName);
 var response = chatClient.CompleteChat(messages, requestOptions);
 Console.WriteLine(response.Value.Content[0].Text);
 ```
 
-**After (Microsoft.Extensions.AI):**
+**After (Asynchronous):**
 ```csharp
-using Microsoft.Extensions.AI;
-IChatClient chatClient = azureClient.GetChatClient(deploymentName).AsChatClient();
-var response = await chatClient.CompleteAsync(messages, chatOptions);
-Console.WriteLine(response.Message.Text);
+using OpenAI.Chat;
+var response = await chatClient.CompleteChatAsync(messages, requestOptions);
+Console.WriteLine(response.Value.Content[0].Text);
 ```
 
 ### Benefits of the New Approach
-- **Testability**: IChatClient interface makes it easier to mock and test your code
-- **Dependency Injection**: Better integration with .NET's built-in DI container
-- **Consistency**: Unified API across different AI providers
-- **Future-proof**: Prepared for upcoming .NET AI ecosystem developments
+- **Performance**: Async operations don't block threads while waiting for responses
+- **Scalability**: Better resource utilization in web applications and services
+- **Future-proof**: Ready for Microsoft.Extensions.AI abstractions as they become available
+- **Modern .NET**: Follows current .NET best practices for async programming
