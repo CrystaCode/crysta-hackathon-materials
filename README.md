@@ -35,3 +35,26 @@ You can start coding in your preferred language. Here are some quick links to he
  - [C# Quickstart](/docs/csharp/README.md)
  - [Python Quickstart](/docs/python/README.md)
  - [JavaScript Quickstart](/docs/javascript/README.md)
+
+If you're using .NET, it would be simply like this:
+
+```csharp
+#:package Microsoft.Extensions.AI.OpenAI@9.9.0-preview.1.25458.4
+#:package Azure.AI.OpenAI@2.3.0-beta.2
+
+using Azure.AI.OpenAI;
+using Microsoft.Extensions.AI;
+using System.ClientModel;
+
+var endpoint = "https://crysta-openai-hackathon.cognitiveservices.azure.com";
+var azureKey = "<YOUR_AZURE_OPENAI_KEY>";
+var deployment = "<YOUR_DEPLOYMENT_NAME>";
+
+var chatClient =
+  new AzureOpenAIClient(new Uri(endpoint), new ApiKeyCredential(azureKey)))
+  .GetChatClient(deployment)
+  .AsIChatClient();
+
+var response = await chatClient.GetResponseAsync("What is AI?");
+Console.WriteLine(response);
+```
