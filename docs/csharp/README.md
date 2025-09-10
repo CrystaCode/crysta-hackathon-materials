@@ -19,11 +19,11 @@ var endpoint = "https://crysta-openai-hackathon.cognitiveservices.azure.com";
 var azureKey = "<YOUR_AZURE_OPENAI_KEY>";
 var deployment = "<YOUR_DEPLOYMENT_NAME>";
 
-AzureOpenAIClient azureClient = new(
-    new Uri(endpoint),
-    new ApiKeyCredential(azureKey));
+var chatClient =
+  new AzureOpenAIClient(new Uri(endpoint), new ApiKeyCredential(azureKey)))
+  .GetChatClient(deployment)
+  .AsIChatClient();
 
-var chatClient = azureClient.GetChatClient(deployment).AsIChatClient();
 var response = await chatClient.GetResponseAsync("What is AI?");
 Console.WriteLine(response);
 ```
