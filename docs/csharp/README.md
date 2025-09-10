@@ -1,4 +1,5 @@
 # Get Started
+Common it's hackathon, let's work with the latest bleeding edge tech, C# 14 and .NET 10!
 
 ## Install .NET 10
 Follow the documentation and install [the latest version of .NET 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)

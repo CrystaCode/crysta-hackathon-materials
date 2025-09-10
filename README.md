@@ -28,3 +28,10 @@ Yes, **you’ll be using AI to unlock your AI tools!** It’s like inception, bu
 > Start your conversation with Crysta here: **[CrystaCode.ai](https://crystacode.ai)**
 
 Let the hacking begin! 
+
+## 🛠️ Getting Started
+You can start coding in your preferred language. Here are some quick links to help you get started:
+
+ - [C# Quickstart](/docs/csharp/README.md)
+ - [Python Quickstart](/docs/python/README.md)
+ - [JavaScript Quickstart](/docs/javascript/README.md)
