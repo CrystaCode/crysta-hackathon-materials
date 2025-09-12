@@ -46,7 +46,7 @@ using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
 using System.ClientModel;
 
-var endpoint = "https://crysta-openai-hackathon.cognitiveservices.azure.com";
+var endpoint = "https://crystacode-hackathon.openai.azure.com";
 var azureKey = "<YOUR_AZURE_OPENAI_KEY>";
 var deployment = "<YOUR_DEPLOYMENT_NAME>";
 
